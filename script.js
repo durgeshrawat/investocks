@@ -1,13 +1,15 @@
+// DOM elements
 const loginForm = document.getElementById('login-form');
-const dashboard = document.querySelector('.dashboard');
+const loginPage = document.getElementById('login-page');
+const dashboardPage = document.getElementById('dashboard-page');
 const investmentTableBody = document.querySelector('#investment-table tbody');
 const logoutButton = document.getElementById('logout-button');
-const profitChartCanvas = document.getElementById('profit-chart');
-
 const totalInvestmentEl = document.getElementById('total-investment').querySelector('p');
 const totalProfitEl = document.getElementById('total-profit').querySelector('p');
 const totalPortfolioEl = document.getElementById('total-portfolio').querySelector('p');
+const profitChartCanvas = document.getElementById('profit-chart');
 
+// Login credentials
 const CLIENT_USERNAME = "ashok";
 const CLIENT_PASSWORD = "securepassword";
 
@@ -22,15 +24,16 @@ Date,Description,Amount (₹),Status
 2025-01-05,Daily Profit,5000,Profit
 `;
 
-// Authenticate user
+// Login form submission
 loginForm.addEventListener('submit', (e) => {
   e.preventDefault();
   const username = document.getElementById('username').value;
   const password = document.getElementById('password').value;
 
   if (username === CLIENT_USERNAME && password === CLIENT_PASSWORD) {
-    document.querySelector('.login-container').classList.add('hidden');
-    dashboard.classList.remove('hidden');
+    // Hide login page and show dashboard
+    loginPage.classList.add('hidden');
+    dashboardPage.classList.remove('hidden');
     loadTableData(csvData);
     calculateSummary(csvData);
     loadProfitChart(csvData);
@@ -41,8 +44,9 @@ loginForm.addEventListener('submit', (e) => {
 
 // Logout functionality
 logoutButton.addEventListener('click', () => {
-  dashboard.classList.add('hidden');
-  document.querySelector('.login-container').classList.remove('hidden');
+  // Show login page and hide dashboard
+  dashboardPage.classList.add('hidden');
+  loginPage.classList.remove('hidden');
 });
 
 // Populate investment table
