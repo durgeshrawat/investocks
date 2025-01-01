@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Client Dashboard</title>
   <link rel="stylesheet" href="styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
   <div class="login-container">
@@ -21,6 +22,7 @@
       <h1>Welcome, Ashok Ramdeo Mishra</h1>
       <button id="logout-button">Logout</button>
     </header>
+
     <section>
       <h2>Your Investments</h2>
       <table id="investment-table">
@@ -36,6 +38,11 @@
           <!-- Data will be populated here -->
         </tbody>
       </table>
+    </section>
+
+    <section>
+      <h2>Profit Trend</h2>
+      <canvas id="profit-chart"></canvas>
     </section>
   </div>
 
