@@ -4,16 +4,21 @@ const investmentTableBody = document.querySelector('#investment-table tbody');
 const logoutButton = document.getElementById('logout-button');
 const profitChartCanvas = document.getElementById('profit-chart');
 
+const totalInvestmentEl = document.getElementById('total-investment').querySelector('p');
+const totalProfitEl = document.getElementById('total-profit').querySelector('p');
+const totalPortfolioEl = document.getElementById('total-portfolio').querySelector('p');
+
 const CLIENT_USERNAME = "ashok";
 const CLIENT_PASSWORD = "securepassword";
 
 // Sample CSV data
 const csvData = `
 Date,Description,Amount (₹),Status
-2025-01-01,Investment in Stock,50000,Active
+2025-01-01,Investment in Stock,50000,Investment
 2025-01-02,Daily Profit,3000,Profit
 2025-01-03,Daily Profit,4500,Profit
 2025-01-04,Daily Profit,-2000,Loss
+2025-01-05,Investment in Mutual Funds,20000,Investment
 2025-01-05,Daily Profit,5000,Profit
 `;
 
@@ -27,6 +32,7 @@ loginForm.addEventListener('submit', (e) => {
     document.querySelector('.login-container').classList.add('hidden');
     dashboard.classList.remove('hidden');
     loadTableData(csvData);
+    calculateSummary(csvData);
     loadProfitChart(csvData);
   } else {
     alert('Invalid username or password');
@@ -52,6 +58,28 @@ function loadTableData(csv) {
     });
     investmentTableBody.appendChild(tr);
   });
+}
+
+// Calculate summary
+function calculateSummary(csv) {
+  const rows = csv.trim().split('\n').slice(1);
+  let totalInvestment = 0;
+  let totalProfit = 0;
+
+  rows.forEach(row => {
+    const [_, description, amount, status] = row.split(',');
+    const value = parseFloat(amount.trim());
+
+    if (status.trim() === "Investment") {
+      totalInvestment += value;
+    } else if (status.trim() === "Profit" || status.trim() === "Loss") {
+      totalProfit += value;
+    }
+  });
+
+  totalInvestmentEl.textContent = `₹${totalInvestment.toLocaleString()}`;
+  totalProfitEl.textContent = `₹${totalProfit.toLocaleString()}`;
+  totalPortfolioEl.textContent = `₹${(totalInvestment + totalProfit).toLocaleString()}`;
 }
 
 // Load profit chart
