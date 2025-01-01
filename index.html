@@ -1,7 +1,286 @@
-float(amount.trim()));
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Client Dashboard</title>
+  <style>
+    /* Global Styles */
+    body {
+      margin: 0;
+      font-family: 'Arial', sans-serif;
+      background-color: #f9fafc;
+      color: #333;
+    }
+    .container {
+      padding: 20px;
+    }
+    /* Login Page */
+    .login-card {
+      background: linear-gradient(135deg, #4c8bf5, #3b72e6);
+      color: #fff;
+      padding: 40px;
+      border-radius: 10px;
+      max-width: 400px;
+      width: 100%;
+      margin: 50px auto;
+      text-align: center;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    }
+    .login-card h1 {
+      font-size: 2em;
+      margin-bottom: 10px;
+    }
+    .login-card input {
+      width: 100%;
+      padding: 15px;
+      margin: 10px 0;
+      border: none;
+      border-radius: 5px;
+    }
+    .login-card button {
+      width: 100%;
+      padding: 15px;
+      background-color: #ff8a3d;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      font-size: 1em;
+      cursor: pointer;
+    }
+    /* Dashboard */
+    .dashboard-header {
+      text-align: center;
+      background-color: #4c8bf5;
+      color: #fff;
+      padding: 15px;
+      font-size: 1.5em;
+      margin-bottom: 20px;
+    }
+    .dashboard-header .logout-btn {
+      margin-top: 10px;
+      background: #dc3545;
+      color: white;
+      padding: 10px 15px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    /* Summary Section */
+    .summary {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+    .summary-box {
+      background: #fff;
+      text-align: center;
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+    .summary-box h2 {
+      color: #4c8bf5;
+    }
+    .summary-box p {
+      font-size: 1.5em;
+      font-weight: bold;
+    }
+    /* Investment Table */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 20px 0;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      background: #fff;
+    }
+    table th, table td {
+      padding: 12px;
+      text-align: left;
+      border: 1px solid #ddd;
+    }
+    table th {
+      background-color: #4c8bf5;
+      color: white;
+    }
+    table tr:nth-child(even) {
+      background-color: #f9f9f9;
+    }
+    table tr:hover {
+      background-color: #f1f1f1;
+    }
+    /* Chart Section */
+    canvas {
+      width: 100%;
+      max-width: 100%;
+      background: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      .summary-box {
+        flex: 1 1 100%;
+      }
+    }
+    .hidden {
+      display: none;
+    }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <!-- Login Page -->
+  <div class="container" id="login-page">
+    <div class="login-card">
+      <h1>Welcome Back</h1>
+      <p>Please log in to access your dashboard</p>
+      <form id="login-form">
+        <input type="text" id="username" placeholder="Username" required>
+        <input type="password" id="password" placeholder="Password" required>
+        <button type="submit">Login</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Dashboard Page -->
+  <div class="container hidden" id="dashboard-page">
+    <header class="dashboard-header">
+      <h1>Client Dashboard</h1>
+      <button id="logout-button" class="logout-btn">Logout</button>
+    </header>
+    <!-- Summary Section -->
+    <section class="summary">
+      <div class="summary-box" id="total-investment">
+        <h2>Total Investment</h2>
+        <p>₹0</p>
+      </div>
+      <div class="summary-box" id="total-profit">
+        <h2>Total Profit</h2>
+        <p>₹0</p>
+      </div>
+      <div class="summary-box" id="total-portfolio">
+        <h2>Portfolio Value</h2>
+        <p>₹0</p>
+      </div>
+    </section>
+    <!-- Investment Table -->
+    <section>
+      <h2>Your Investments</h2>
+      <table id="investment-table">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Description</th>
+            <th>Amount (₹)</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </section>
+    <!-- Profit Trend Chart -->
+    <section>
+      <h2>Profit Trend</h2>
+      <canvas id="profit-chart"></canvas>
+    </section>
+  </div>
+
+  <script>
+    // DOM elements
+    const loginForm = document.getElementById('login-form');
+    const loginPage = document.getElementById('login-page');
+    const dashboardPage = document.getElementById('dashboard-page');
+    const logoutButton = document.getElementById('logout-button');
+    const investmentTableBody = document.querySelector('#investment-table tbody');
+    const totalInvestmentEl = document.getElementById('total-investment').querySelector('p');
+    const totalProfitEl = document.getElementById('total-profit').querySelector('p');
+    const totalPortfolioEl = document.getElementById('total-portfolio').querySelector('p');
+    const profitChartCanvas = document.getElementById('profit-chart');
+
+    // Login credentials
+    const CLIENT_USERNAME = "ashok";
+    const CLIENT_PASSWORD = "securepassword";
+
+    // Sample CSV data
+    const csvData = `
+Date,Description,Amount (₹),Status
+2025-01-01,Investment in Stock,50000,Investment
+2025-01-02,Daily Profit,3000,Profit
+2025-01-03,Daily Profit,4500,Profit
+2025-01-04,Daily Profit,-2000,Loss
+2025-01-05,Investment in Mutual Funds,20000,Investment
+2025-01-06,Daily Profit,5000,Profit
+    `;
+
+    // Event listener for login form submission
+    loginForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const username = document.getElementById('username').value.trim();
+      const password = document.getElementById('password').value.trim();
+
+      if (username === CLIENT_USERNAME && password === CLIENT_PASSWORD) {
+        loginPage.classList.add('hidden');
+        dashboardPage.classList.remove('hidden');
+        loadTableData(csvData);
+        calculateSummary(csvData);
+        loadProfitChart(csvData);
+      } else {
+        alert('Invalid username or password. Please try again.');
+      }
+    });
+
+    // Logout button functionality
+    logoutButton.addEventListener('click', () => {
+      dashboardPage.classList.add('hidden');
+      loginPage.classList.remove('hidden');
+      document.getElementById('login-form').reset();
+    });
+
+    // Load table data
+    function loadTableData(csv) {
+      const rows = csv.trim().split('\n').slice(1);
+      investmentTableBody.innerHTML = '';
+      rows.forEach(row => {
+        const cells = row.split(',');
+        const tr = document.createElement('tr');
+        cells.forEach(cell => {
+          const td = document.createElement('td');
+          td.textContent = cell.trim();
+          tr.appendChild(td);
+        });
+        investmentTableBody.appendChild(tr);
+      });
+    }
+
+    // Calculate summary
+    function calculateSummary(csv) {
+      let totalInvestment = 0, totalProfit = 0;
+      csv.trim().split('\n').slice(1).forEach(row => {
+        const [_, __, amount, status] = row.split(',');
+        const value = parseFloat(amount.trim());
+        if (status.trim() === "Investment") totalInvestment += value;
+        else totalProfit += value;
+      });
+      totalInvestmentEl.textContent = `₹${totalInvestment.toLocaleString()}`;
+      totalProfitEl.textContent = `₹${totalProfit.toLocaleString()}`;
+      totalPortfolioEl.textContent = `₹${(totalInvestment + totalProfit).toLocaleString()}`;
+    }
+
+    // Load profit chart
+    function loadProfitChart(csv) {
+      const rows = csv.trim().split('\n').slice(1);
+      const labels = [];
+      const profits = [];
+      rows.forEach(row => {
+        const [date, , amount, status] = row.split(',');
+        if (status.trim() === "Profit" || status.trim() === "Loss") {
+          labels.push(date.trim());
+          profits.push(parseFloat(amount.trim()));
         }
       });
-
       new Chart(profitChartCanvas, {
         type: 'line',
         data: {
@@ -9,8 +288,8 @@ float(amount.trim()));
           datasets: [{
             label: 'Daily Profit (₹)',
             data: profits,
-            borderColor: '#fff',
-            backgroundColor: 'rgba(255, 255, 255, 0.2)',
+            borderColor: '#007bff',
+            backgroundColor: 'rgba(0, 123, 255, 0.2)',
             borderWidth: 2,
             fill: true,
           }],
@@ -21,8 +300,8 @@ float(amount.trim()));
             legend: { display: true, position: 'top' },
           },
           scales: {
-            x: { title: { display: true, text: 'Date' }, grid: { color: 'rgba(255,255,255,0.2)' } },
-            y: { title: { display: true, text: 'Profit (₹)' }, grid: { color: 'rgba(255,255,255,0.2)' } },
+            x: { title: { display: true, text: 'Date' } },
+            y: { title: { display: true, text: 'Profit (₹)' } },
           },
         },
       });
