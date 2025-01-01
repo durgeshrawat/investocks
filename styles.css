@@ -2,16 +2,11 @@
 body {
   margin: 0;
   font-family: 'Arial', sans-serif;
-  background-color: #f4f4f9;
+  background-color: #f9fafc;
   color: #333;
-  line-height: 1.6;
 }
 
 .container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
   padding: 20px;
 }
 
@@ -21,20 +16,16 @@ body {
   color: #fff;
   padding: 40px;
   border-radius: 10px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
   max-width: 400px;
   width: 100%;
+  margin: 50px auto;
   text-align: center;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
 }
 
 .login-card h1 {
-  font-size: 2.2em;
+  font-size: 2em;
   margin-bottom: 10px;
-}
-
-.login-card p {
-  margin-bottom: 20px;
-  color: #dbe5ff;
 }
 
 .login-card input {
@@ -43,79 +34,53 @@ body {
   margin: 10px 0;
   border: none;
   border-radius: 5px;
-  font-size: 1em;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .login-card button {
   width: 100%;
   padding: 15px;
   background-color: #ff8a3d;
+  color: #fff;
   border: none;
   border-radius: 5px;
   font-size: 1em;
-  color: #fff;
-  font-weight: bold;
   cursor: pointer;
-  transition: background-color 0.3s ease;
 }
 
-.login-card button:hover {
-  background-color: #ff7320;
-}
-
-/* Dashboard Page */
-.hidden {
-  display: none;
-}
-
+/* Dashboard */
 .dashboard-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+  text-align: center;
   background-color: #4c8bf5;
   color: #fff;
-  padding: 15px 20px;
-  border-bottom: 3px solid #3b72e6;
+  padding: 15px;
+  font-size: 1.5em;
+  margin-bottom: 20px;
 }
 
-.dashboard-header h1 {
-  font-size: 1.8em;
-}
-
-.logout-btn {
+.dashboard-header .logout-btn {
+  margin-top: 10px;
   background: #dc3545;
   color: white;
-  border: none;
   padding: 10px 15px;
+  border: none;
   border-radius: 5px;
   cursor: pointer;
-  font-size: 0.9em;
-  transition: background 0.3s ease;
-}
-
-.logout-btn:hover {
-  background: #a71d2a;
 }
 
 /* Summary Section */
 .summary {
   display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
+  flex-direction: column;
   gap: 15px;
-  padding: 20px;
-  margin: 20px 0;
+  margin-bottom: 20px;
 }
 
 .summary-box {
-  flex: 1 1 calc(33.333% - 10px);
   background: #fff;
   text-align: center;
   border-radius: 10px;
   padding: 20px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  transition: transform 0.3s ease;
 }
 
 .summary-box h2 {
@@ -125,10 +90,6 @@ body {
 .summary-box p {
   font-size: 1.5em;
   font-weight: bold;
-}
-
-.summary-box:hover {
-  transform: translateY(-5px);
 }
 
 /* Investment Table */
@@ -141,14 +102,14 @@ table {
 }
 
 table th, table td {
-  padding: 12px 15px;
-  border: 1px solid #ddd;
+  padding: 12px;
   text-align: left;
+  border: 1px solid #ddd;
 }
 
 table th {
   background-color: #4c8bf5;
-  color: #fff;
+  color: white;
 }
 
 table tr:nth-child(even) {
@@ -161,6 +122,7 @@ table tr:hover {
 
 /* Chart Section */
 canvas {
+  width: 100%;
   max-width: 100%;
   background: #fff;
   padding: 20px;
@@ -172,14 +134,5 @@ canvas {
 @media (max-width: 768px) {
   .summary-box {
     flex: 1 1 100%;
-  }
-
-  .dashboard-header h1 {
-    font-size: 1.5em;
-  }
-
-  .logout-btn {
-    padding: 8px 12px;
-    font-size: 0.8em;
   }
 }
