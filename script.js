@@ -21,41 +21,47 @@ Date,Description,Amount (₹),Status
 2025-01-03,Daily Profit,4500,Profit
 2025-01-04,Daily Profit,-2000,Loss
 2025-01-05,Investment in Mutual Funds,20000,Investment
-2025-01-05,Daily Profit,5000,Profit
+2025-01-06,Daily Profit,5000,Profit
 `;
 
-// Login form submission
+// Event listener for login form submission
 loginForm.addEventListener('submit', (e) => {
-  e.preventDefault();
-  const username = document.getElementById('username').value;
-  const password = document.getElementById('password').value;
+  e.preventDefault(); // Prevent the form from refreshing the page
+  const username = document.getElementById('username').value.trim();
+  const password = document.getElementById('password').value.trim();
 
   if (username === CLIENT_USERNAME && password === CLIENT_PASSWORD) {
+    // Hide login page and show dashboard
     loginPage.classList.add('hidden');
     dashboardPage.classList.remove('hidden');
+
+    // Initialize dashboard
     loadTableData(csvData);
     calculateSummary(csvData);
     loadProfitChart(csvData);
   } else {
-    alert('Invalid username or password');
+    alert('Invalid username or password. Please try again.');
   }
 });
 
-// Logout functionality
+// Logout button functionality
 logoutButton.addEventListener('click', () => {
   dashboardPage.classList.add('hidden');
   loginPage.classList.remove('hidden');
+  document.getElementById('login-form').reset(); // Clear login form
 });
 
-// Populate investment table
+// Load table data
 function loadTableData(csv) {
-  const rows = csv.trim().split('\n').slice(1);
+  const rows = csv.trim().split('\n').slice(1); // Exclude the header row
+  investmentTableBody.innerHTML = ''; // Clear existing rows
+
   rows.forEach(row => {
     const cells = row.split(',');
     const tr = document.createElement('tr');
     cells.forEach(cell => {
       const td = document.createElement('td');
-      td.textContent = cell;
+      td.textContent = cell.trim();
       tr.appendChild(td);
     });
     investmentTableBody.appendChild(tr);
@@ -67,8 +73,9 @@ function calculateSummary(csv) {
   let totalInvestment = 0, totalProfit = 0;
 
   csv.trim().split('\n').slice(1).forEach(row => {
-    const [_, _, amount, status] = row.split(',');
+    const [_, __, amount, status] = row.split(',');
     const value = parseFloat(amount.trim());
+
     if (status.trim() === "Investment") totalInvestment += value;
     else totalProfit += value;
   });
@@ -80,7 +87,7 @@ function calculateSummary(csv) {
 
 // Load profit chart
 function loadProfitChart(csv) {
-  const rows = csv.trim().split('\n').slice(1);
+  const rows = csv.trim().split('\n').slice(1); // Exclude the header row
   const labels = [];
   const profits = [];
 
