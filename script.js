@@ -2,8 +2,8 @@
 const loginForm = document.getElementById('login-form');
 const loginPage = document.getElementById('login-page');
 const dashboardPage = document.getElementById('dashboard-page');
-const investmentTableBody = document.querySelector('#investment-table tbody');
 const logoutButton = document.getElementById('logout-button');
+const investmentTableBody = document.querySelector('#investment-table tbody');
 const totalInvestmentEl = document.getElementById('total-investment').querySelector('p');
 const totalProfitEl = document.getElementById('total-profit').querySelector('p');
 const totalPortfolioEl = document.getElementById('total-portfolio').querySelector('p');
@@ -31,7 +31,6 @@ loginForm.addEventListener('submit', (e) => {
   const password = document.getElementById('password').value;
 
   if (username === CLIENT_USERNAME && password === CLIENT_PASSWORD) {
-    // Hide login page and show dashboard
     loginPage.classList.add('hidden');
     dashboardPage.classList.remove('hidden');
     loadTableData(csvData);
@@ -44,7 +43,6 @@ loginForm.addEventListener('submit', (e) => {
 
 // Logout functionality
 logoutButton.addEventListener('click', () => {
-  // Show login page and hide dashboard
   dashboardPage.classList.add('hidden');
   loginPage.classList.remove('hidden');
 });
@@ -66,19 +64,13 @@ function loadTableData(csv) {
 
 // Calculate summary
 function calculateSummary(csv) {
-  const rows = csv.trim().split('\n').slice(1);
-  let totalInvestment = 0;
-  let totalProfit = 0;
+  let totalInvestment = 0, totalProfit = 0;
 
-  rows.forEach(row => {
-    const [_, description, amount, status] = row.split(',');
+  csv.trim().split('\n').slice(1).forEach(row => {
+    const [_, _, amount, status] = row.split(',');
     const value = parseFloat(amount.trim());
-
-    if (status.trim() === "Investment") {
-      totalInvestment += value;
-    } else if (status.trim() === "Profit" || status.trim() === "Loss") {
-      totalProfit += value;
-    }
+    if (status.trim() === "Investment") totalInvestment += value;
+    else totalProfit += value;
   });
 
   totalInvestmentEl.textContent = `₹${totalInvestment.toLocaleString()}`;
@@ -93,7 +85,7 @@ function loadProfitChart(csv) {
   const profits = [];
 
   rows.forEach(row => {
-    const [date, description, amount, status] = row.split(',');
+    const [date, , amount, status] = row.split(',');
     if (status.trim() === "Profit" || status.trim() === "Loss") {
       labels.push(date.trim());
       profits.push(parseFloat(amount.trim()));
@@ -103,15 +95,15 @@ function loadProfitChart(csv) {
   new Chart(profitChartCanvas, {
     type: 'line',
     data: {
-      labels: labels,
+      labels,
       datasets: [{
         label: 'Daily Profit (₹)',
         data: profits,
         borderColor: '#007bff',
         backgroundColor: 'rgba(0, 123, 255, 0.2)',
         borderWidth: 2,
-        fill: true
-      }]
+        fill: true,
+      }],
     },
     options: {
       responsive: true,
@@ -120,8 +112,8 @@ function loadProfitChart(csv) {
       },
       scales: {
         x: { title: { display: true, text: 'Date' } },
-        y: { title: { display: true, text: 'Profit (₹)' } }
-      }
-    }
+        y: { title: { display: true, text: 'Profit (₹)' } },
+      },
+    },
   });
 }
