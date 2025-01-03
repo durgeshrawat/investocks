@@ -5,44 +5,23 @@ body {
   background-color: #f9fafc;
   color: #333;
 }
-
 .container {
   padding: 20px;
 }
 
 /* Login Page */
-.login-card {
-  background: linear-gradient(135deg, #4c8bf5, #3b72e6);
-  color: #fff;
-  padding: 40px;
-  border-radius: 10px;
-  max-width: 400px;
-  width: 100%;
-  margin: 50px auto;
-  text-align: center;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-}
-
-.login-card h1 {
-  font-size: 2em;
-  margin-bottom: 10px;
-}
-
-.login-card input {
+.login-card input,
+.login-card button {
   width: 100%;
   padding: 15px;
   margin: 10px 0;
   border: none;
   border-radius: 5px;
+  box-sizing: border-box;
 }
-
 .login-card button {
-  width: 100%;
-  padding: 15px;
   background-color: #ff8a3d;
   color: #fff;
-  border: none;
-  border-radius: 5px;
   font-size: 1em;
   cursor: pointer;
 }
@@ -56,7 +35,6 @@ body {
   font-size: 1.5em;
   margin-bottom: 20px;
 }
-
 .dashboard-header .logout-btn {
   margin-top: 10px;
   background: #dc3545;
@@ -74,7 +52,6 @@ body {
   gap: 15px;
   margin-bottom: 20px;
 }
-
 .summary-box {
   background: #fff;
   text-align: center;
@@ -82,11 +59,9 @@ body {
   padding: 20px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
-
 .summary-box h2 {
   color: #4c8bf5;
 }
-
 .summary-box p {
   font-size: 1.5em;
   font-weight: bold;
@@ -100,22 +75,18 @@ table {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   background: #fff;
 }
-
 table th, table td {
   padding: 12px;
   text-align: left;
   border: 1px solid #ddd;
 }
-
 table th {
   background-color: #4c8bf5;
   color: white;
 }
-
 table tr:nth-child(even) {
   background-color: #f9f9f9;
 }
-
 table tr:hover {
   background-color: #f1f1f1;
 }
@@ -130,9 +101,33 @@ canvas {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-/* Responsive Design */
-@media (max-width: 768px) {
-  .summary-box {
-    flex: 1 1 100%;
-  }
+/* Footer Section */
+.footer {
+  text-align: center;
+  margin-top: 30px;
+  font-size: 1em;
+  color: #666;
+}
+.footer p {
+  margin: 0;
+}
+.hidden {
+  display: none;
+}
+
+/* Updates Card */
+.updates-card {
+  background-color: #f4f6f9;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+.updates-card .highlight {
+  color: green;
+  font-weight: bold;
+}
+.mission {
+  font-size: 1.2em;
+  font-weight: bold;
+  color: #4c8bf5;
 }
