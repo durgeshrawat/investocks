@@ -3,217 +3,244 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Trading Dashboard</title>
+  <title>Dashboard</title>
   <style>
+    /* Global Styles */
     body {
-      font-family: Arial, sans-serif;
       margin: 0;
-      padding: 0;
-      background: #f4f4f4;
-    }
-
-    #login-page, #dashboard-page {
-      max-width: 800px;
-      margin: 50px auto;
-      padding: 20px;
-      background: #fff;
-      border-radius: 10px;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    }
-
-    .hidden {
-      display: none;
-    }
-
-    h1 {
-      text-align: center;
+      font-family: 'Arial', sans-serif;
+      background-color: #f9fafc;
       color: #333;
     }
-
-    form {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
+    .container {
+      padding: 20px;
     }
+    /* Login Page */
+    /* Login Page */
+  .login-card input,
+  .login-card button {
+    width: 100%;
+    padding: 15px;
+    margin: 10px 0;
+    border: none;
+    border-radius: 5px;
+    box-sizing: border-box;
+  }
 
-    input, button {
-      padding: 10px;
-      font-size: 1em;
-    }
-
-    button {
-      background: #4c8bf5;
+  .login-card button {
+    background-color: #ff8a3d;
+    color: #fff;
+    font-size: 1em;
+    cursor: pointer;
+  }
+    /* Dashboard */
+/* Dashboard */
+    .dashboard-header {
+      text-align: center;
+      background-color: #4c8bf5;
       color: #fff;
+      padding: 15px;
+      font-size: 1.5em;
+      margin-bottom: 20px;
+    }
+    /* Footer Section */
+.footer {
+  text-align: center;
+  margin-top: 30px;
+  font-size: 1em;
+  color: #666;
+}
+
+.footer p {
+  margin: 0;
+}
+
+    .dashboard-header .logout-btn {
+      margin-top: 10px;
+      background: #dc3545;
+      color: white;
+      padding: 10px 15px;
       border: none;
+      border-radius: 5px;
       cursor: pointer;
     }
-
-    button:hover {
-      background: #357ae8;
-    }
-
+    /* Summary Section */
     .summary {
       display: flex;
+      flex-direction: column;
       gap: 15px;
       margin-bottom: 20px;
     }
-
     .summary-box {
       background: #fff;
       text-align: center;
       border-radius: 10px;
       padding: 20px;
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-      flex: 1;
     }
-
     .summary-box h2 {
       color: #4c8bf5;
     }
-
     .summary-box p {
       font-size: 1.5em;
       font-weight: bold;
     }
-
+    /* Investment Table */
     table {
       width: 100%;
       border-collapse: collapse;
-      margin-top: 20px;
+      margin: 20px 0;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      background: #fff;
     }
-
     table th, table td {
-      padding: 10px;
-      border: 1px solid #ddd;
+      padding: 12px;
       text-align: left;
+      border: 1px solid #ddd;
     }
-
     table th {
-      background: #4c8bf5;
-      color: #fff;
+      background-color: #4c8bf5;
+      color: white;
     }
-
     table tr:nth-child(even) {
-      background: #f9f9f9;
+      background-color: #f9f9f9;
     }
+    table tr:hover {
+      background-color: #f1f1f1;
+    }
+    /* Chart Section */
+    canvas {
+      width: 100%;
+      max-width: 100%;
+      background: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+    .line-above-footer {
+    height: 2px; /* Set the height of the line */
+    background-color: #000; /* Set the color of the line */
+    margin-bottom: 20px; /* Adjust the space below the line */
+}
 
+    /* Responsive Design */
     @media (max-width: 768px) {
-      .summary {
-        flex-direction: column;
+      .summary-box {
+        flex: 1 1 100%;
       }
     }
+    .hidden {
+      display: none;
+    }
   </style>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-  <div id="login-page">
-    <h1>Client Login</h1>
-    <form id="login-form">
-      <input type="text" id="username" placeholder="Username" required>
-      <input type="password" id="password" placeholder="Password" required>
-      <button type="submit">Login</button>
-    </form>
+  <!-- Login Page -->
+  <div class="container" id="login-page">
+    <div class="login-card">
+      <h1>Welcome Back</h1>
+      <p>Please log in to access your dashboard</p>
+      <form id="login-form">
+        <input type="text" id="username" placeholder="Username" required>
+        <input type="password" id="password" placeholder="Password" required>
+        <button type="submit">Login</button>
+      </form>
+    </div>
   </div>
+ 
 
-  <div id="dashboard-page" class="hidden">
-    <h1>Welcome to the Dashboard</h1>
+  <!-- Dashboard Page -->
+  <div class="container hidden" id="dashboard-page">
+    <header class="dashboard-header">
+      <h3>Ashok Mishra's Dashboard</h3>
+      <button id="logout-button" class="logout-btn">Logout</button>
+    </header>
+    <!-- Summary Section -->
     <section class="summary">
       <div class="summary-box" id="total-investment">
         <h2>Total Investment</h2>
         <p>₹0</p>
       </div>
       <div class="summary-box" id="total-profit">
-        <h2>Total Profit</h2>
+        <h2>Total Profit </h2>
         <p style="color: green;">+₹0</p>
       </div>
       <div class="summary-box" id="total-portfolio">
         <h2>Portfolio Value</h2>
         <p>₹0</p>
       </div>
-      <div class="summary-box" id="todays-pnl">
-        <h2>Today's PnL</h2>
-        <p>₹0</p>
-      </div>
     </section>
-    <table id="log-table">
-      <thead>
-        <tr>
-          <th>Date</th>
-          <th>Stock</th>
-          <th>Amount</th>
-          <th>Status</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
+    <!-- Investment Table -->
+    <section>
+      <h2>Your Investments</h2>
+      <table id="investment-table">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Description</th>
+            <th>Amount (₹)</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </section>
+    <!-- Profit Trend Chart -->
+    <section>
+      <h2>Profit Trend</h2>
+      <canvas id="profit-chart"></canvas>
+    </section>
   </div>
+
   <script>
-    const CLIENT_USERNAME = "ashok";
-    const CLIENT_PASSWORD = "12345";
-
-    const csvData = `
-Date,Stock,Amount,Status
-02-01-2025,Stock A,5000,Profit
-02-01-2025,Stock B,2000,Loss
-02-01-2025,Stock C,3000,Profit
-01-01-2025,Stock D,4000,Loss
-`;
-
+    // DOM elements
     const loginForm = document.getElementById('login-form');
     const loginPage = document.getElementById('login-page');
     const dashboardPage = document.getElementById('dashboard-page');
+    const logoutButton = document.getElementById('logout-button');
+    const investmentTableBody = document.querySelector('#investment-table tbody');
+    const totalInvestmentEl = document.getElementById('total-investment').querySelector('p');
+    const totalProfitEl = document.getElementById('total-profit').querySelector('p');
+    const totalPortfolioEl = document.getElementById('total-portfolio').querySelector('p');
+    const profitChartCanvas = document.getElementById('profit-chart');
 
-    function loadTableData(csv) {
-      const rows = csv.trim().split('\n').slice(1);
-      const tableBody = document.querySelector('#log-table tbody');
-      tableBody.innerHTML = '';
+    // Login credentials
+    const CLIENT_USERNAME = "ashok";
+    const CLIENT_PASSWORD = "secure";
 
-      rows.forEach(row => {
-        const columns = row.split(',');
-        const tr = document.createElement('tr');
-        columns.forEach(col => {
-          const td = document.createElement('td');
-          td.textContent = col.trim();
-          tr.appendChild(td);
-        });
-        tableBody.appendChild(tr);
-      });
-    }
+    // Sample CSV data
+    const csvData = `
+          Date,Description,Amount (₹),Status
+          23-Dec-2024,Investment,10000,Investment
+          23-Dec-2024,Exness,1256,Profit
+          24-Dec-2024,Exness,1899,Profit
+          25-Dec-2024,Exness,656,Profit
+          26-Dec-2024,Exness,4356,Profit
+          27-Dec-2024,Investment,10000,Investment
+          27-Dec-2024,Investment,10000,Investment
+          28-Dec-2024,Exness,1856,Profit
+          29-Dec-2024,Exness,5056,Profit
+          30-Dec-2024,Investment,10000,Investment
+          31-Dec-2024,Exness,4988,Profit
+          01-Jan-2024,Investment,10000,Investment
+          31-Dec-2024,Exness,342,Profit
+          01-Jan-2025,Investment,2000,Profit
+          01-Jan-2024,Investment,50000,Investment
+          02-Jan-2024,Exness,1043,Profit
+          02-Jan-2024,Exness,1180,Profit
+          02-Jan-2024,Exness,1043,Profit
+          02-Jan-2024,Exness,7780,Profit
+          02-Jan-2024,Investment,50000,Investment
+          02-Jan-2024,Profit,289,Profit
+          02-Jan-2024,Profit,678,Profit
+          02-Jan-2024,Profit,1300,Profit
+          02-Jan-2024,Profit,288,Profit
+          02-Jan-2024,Profit,5180,Profit
+          03-Jan-2024,Counting,0000,Counting
+    `;
 
-    function calculateSummary(csv) {
-      let totalInvestment = 0;
-      let totalProfit = 0;
-
-      csv.trim().split('\n').slice(1).forEach(row => {
-        const [, , amount, status] = row.split(',');
-        const value = parseFloat(amount.trim());
-        if (status.trim() === "Profit") totalProfit += value;
-        totalInvestment += value;
-      });
-
-      document.getElementById('total-investment').querySelector('p').textContent = `₹${totalInvestment.toLocaleString()}`;
-      document.getElementById('total-profit').querySelector('p').textContent = `+₹${totalProfit.toLocaleString()}`;
-      document.getElementById('total-profit').querySelector('p').style.color = 'green';
-    }
-
-    function calculateTodaysPnL(csv) {
-      const today = new Date().toLocaleDateString('en-GB');
-      let todaysPnL = 0;
-
-      csv.trim().split('\n').slice(1).forEach(row => {
-        const [date, , amount, status] = row.split(',');
-        const value = parseFloat(amount.trim());
-        if (date.trim() === today && status.trim() === "Profit") {
-          todaysPnL += value;
-        } else if (date.trim() === today && status.trim() === "Loss") {
-          todaysPnL -= value;
-        }
-      });
-
-      const todaysPnLEl = document.getElementById('todays-pnl').querySelector('p');
-      todaysPnLEl.textContent = `₹${todaysPnL.toLocaleString()}`;
-      todaysPnLEl.style.color = todaysPnL >= 0 ? 'green' : 'red';
-    }
-
+    // Event listener for login form submission
     loginForm.addEventListener('submit', (e) => {
       e.preventDefault();
       const username = document.getElementById('username').value.trim();
@@ -224,11 +251,99 @@ Date,Stock,Amount,Status
         dashboardPage.classList.remove('hidden');
         loadTableData(csvData);
         calculateSummary(csvData);
-        calculateTodaysPnL(csvData);
+        loadProfitChart(csvData);
       } else {
         alert('Invalid username or password. Please try again.');
       }
     });
+
+    // Logout button functionality
+    logoutButton.addEventListener('click', () => {
+      dashboardPage.classList.add('hidden');
+      loginPage.classList.remove('hidden');
+      document.getElementById('login-form').reset();
+    });
+
+    // Load table data
+    function loadTableData(csv) {
+  const rows = csv.trim().split('\n').slice(1);
+  investmentTableBody.innerHTML = '';
+  rows.forEach(row => {
+    const cells = row.split(',');
+    const tr = document.createElement('tr');
+    cells.forEach((cell, index) => {
+      const td = document.createElement('td');
+      td.textContent = cell.trim();
+
+      // Apply styles to the "Amount (₹)" cell if it's a profit
+      if (index === 2 && cells[3].trim() === "Profit") {
+        td.style.fontWeight = "bold";
+        td.style.color = "green";
+      }
+
+      tr.appendChild(td);
+    });
+    investmentTableBody.appendChild(tr);
+  });
+}
+
+    // Calculate summary
+    function calculateSummary(csv) {
+      let totalInvestment = 0, totalProfit = 0;
+      csv.trim().split('\n').slice(1).forEach(row => {
+        const [_, __, amount, status] = row.split(',');
+        const value = parseFloat(amount.trim());
+        if (status.trim() === "Investment") totalInvestment += value;
+        else totalProfit += value;
+      });
+      totalInvestmentEl.textContent = `₹${totalInvestment.toLocaleString()}`;
+      totalProfitEl.textContent = `₹${totalProfit.toLocaleString()}`;
+      totalPortfolioEl.textContent = `₹${(totalInvestment + totalProfit).toLocaleString()}`;
+    }
+
+    // Load profit chart
+    function loadProfitChart(csv) {
+      const rows = csv.trim().split('\n').slice(1);
+      const labels = [];
+      const profits = [];
+      rows.forEach(row => {
+        const [date, , amount, status] = row.split(',');
+        if (status.trim() === "Profit" || status.trim() === "Loss") {
+          labels.push(date.trim());
+          profits.push(parseFloat(amount.trim()));
+        }
+      });
+      new Chart(profitChartCanvas, {
+        type: 'line',
+        data: {
+          labels,
+          datasets: [{
+            label: 'Daily Profit (₹)',
+            data: profits,
+            borderColor: '#007bff',
+            backgroundColor: 'rgba(0, 123, 255, 0.2)',
+            borderWidth: 2,
+            fill: true,
+          }],
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: { display: true, position: 'top' },
+          },
+          scales: {
+            x: { title: { display: true, text: 'Date' } },
+            y: { title: { display: true, text: 'Profit (₹)' } },
+          },
+        },
+      });
+    }
   </script>
+  <div class="footer">
+  <p>&copy; 2025 All rights reserved to Durgesh Rawat</p>
+</div>
+
+  
+</div>
 </body>
 </html>
