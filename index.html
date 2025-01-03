@@ -1,8 +1,156 @@
-const CLIENT_USERNAME = "Ashok";
-const CLIENT_PASSWORD = "12345";
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Trading Dashboard</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #f4f4f4;
+    }
 
-// Mock CSV data
-const csvData = `
+    #login-page, #dashboard-page {
+      max-width: 800px;
+      margin: 50px auto;
+      padding: 20px;
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    h1 {
+      text-align: center;
+      color: #333;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    input, button {
+      padding: 10px;
+      font-size: 1em;
+    }
+
+    button {
+      background: #4c8bf5;
+      color: #fff;
+      border: none;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #357ae8;
+    }
+
+    .summary {
+      display: flex;
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+
+    .summary-box {
+      background: #fff;
+      text-align: center;
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      flex: 1;
+    }
+
+    .summary-box h2 {
+      color: #4c8bf5;
+    }
+
+    .summary-box p {
+      font-size: 1.5em;
+      font-weight: bold;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+
+    table th, table td {
+      padding: 10px;
+      border: 1px solid #ddd;
+      text-align: left;
+    }
+
+    table th {
+      background: #4c8bf5;
+      color: #fff;
+    }
+
+    table tr:nth-child(even) {
+      background: #f9f9f9;
+    }
+
+    @media (max-width: 768px) {
+      .summary {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="login-page">
+    <h1>Client Login</h1>
+    <form id="login-form">
+      <input type="text" id="username" placeholder="Username" required>
+      <input type="password" id="password" placeholder="Password" required>
+      <button type="submit">Login</button>
+    </form>
+  </div>
+
+  <div id="dashboard-page" class="hidden">
+    <h1>Welcome to the Dashboard</h1>
+    <section class="summary">
+      <div class="summary-box" id="total-investment">
+        <h2>Total Investment</h2>
+        <p>₹0</p>
+      </div>
+      <div class="summary-box" id="total-profit">
+        <h2>Total Profit</h2>
+        <p style="color: green;">+₹0</p>
+      </div>
+      <div class="summary-box" id="total-portfolio">
+        <h2>Portfolio Value</h2>
+        <p>₹0</p>
+      </div>
+      <div class="summary-box" id="todays-pnl">
+        <h2>Today's PnL</h2>
+        <p>₹0</p>
+      </div>
+    </section>
+    <table id="log-table">
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Stock</th>
+          <th>Amount</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+  <script>
+    const CLIENT_USERNAME = "Ashok";
+    const CLIENT_PASSWORD = "12345";
+
+    const csvData = `
 Date,Stock,Amount,Status
 02-01-2025,Stock A,5000,Profit
 02-01-2025,Stock B,2000,Loss
@@ -10,78 +158,77 @@ Date,Stock,Amount,Status
 01-01-2025,Stock D,4000,Loss
 `;
 
-const loginForm = document.getElementById('login-form');
-const loginPage = document.getElementById('login-page');
-const dashboardPage = document.getElementById('dashboard-page');
+    const loginForm = document.getElementById('login-form');
+    const loginPage = document.getElementById('login-page');
+    const dashboardPage = document.getElementById('dashboard-page');
 
-// Load data into the table
-function loadTableData(csv) {
-  const rows = csv.trim().split('\n').slice(1);
-  const tableBody = document.querySelector('#log-table tbody');
-  tableBody.innerHTML = ''; // Clear old data
+    function loadTableData(csv) {
+      const rows = csv.trim().split('\n').slice(1);
+      const tableBody = document.querySelector('#log-table tbody');
+      tableBody.innerHTML = '';
 
-  rows.forEach(row => {
-    const columns = row.split(',');
-    const tr = document.createElement('tr');
-    columns.forEach(col => {
-      const td = document.createElement('td');
-      td.textContent = col.trim();
-      tr.appendChild(td);
-    });
-    tableBody.appendChild(tr);
-  });
-}
-
-// Calculate and display summary values
-function calculateSummary(csv) {
-  let totalInvestment = 0;
-  let totalProfit = 0;
-
-  csv.trim().split('\n').slice(1).forEach(row => {
-    const [, , amount, status] = row.split(',');
-    const value = parseFloat(amount.trim());
-    if (status.trim() === "Profit") totalProfit += value;
-    totalInvestment += value;
-  });
-
-  document.getElementById('total-investment').querySelector('p').textContent = `₹${totalInvestment.toLocaleString()}`;
-  document.getElementById('total-profit').querySelector('p').textContent = `+₹${totalProfit.toLocaleString()}`;
-  document.getElementById('total-profit').querySelector('p').style.color = 'green';
-}
-
-// Calculate today's PnL
-function calculateTodaysPnL(csv) {
-  const today = new Date().toLocaleDateString('en-GB'); // Format: DD-MM-YYYY
-  let todaysPnL = 0;
-
-  csv.trim().split('\n').slice(1).forEach(row => {
-    const [date, , amount, status] = row.split(',');
-    const value = parseFloat(amount.trim());
-    if (date.trim() === today && status.trim() === "Profit") {
-      todaysPnL += value;
-    } else if (date.trim() === today && status.trim() === "Loss") {
-      todaysPnL -= value;
+      rows.forEach(row => {
+        const columns = row.split(',');
+        const tr = document.createElement('tr');
+        columns.forEach(col => {
+          const td = document.createElement('td');
+          td.textContent = col.trim();
+          tr.appendChild(td);
+        });
+        tableBody.appendChild(tr);
+      });
     }
-  });
 
-  const todaysPnLEl = document.getElementById('todays-pnl').querySelector('p');
-  todaysPnLEl.textContent = `₹${todaysPnL.toLocaleString()}`;
-  todaysPnLEl.style.color = todaysPnL >= 0 ? 'green' : 'red';
-}
+    function calculateSummary(csv) {
+      let totalInvestment = 0;
+      let totalProfit = 0;
 
-// Login form submit handler
-loginForm.addEventListener('submit', (e) => {
-  e.preventDefault();
-  const username = document.getElementById('username').value.trim();
-  const password = document.getElementById('password').value.trim();
+      csv.trim().split('\n').slice(1).forEach(row => {
+        const [, , amount, status] = row.split(',');
+        const value = parseFloat(amount.trim());
+        if (status.trim() === "Profit") totalProfit += value;
+        totalInvestment += value;
+      });
 
-  if (username === CLIENT_USERNAME && password === CLIENT_PASSWORD) {
-    loginPage.classList.add('hidden');
-    dashboardPage.classList.remove('hidden');
-    loadTableData(csvData);
-    calculateSummary(csvData);
-    calculateTodaysPnL(csvData);
-  } else {
-    alert('Invalid username or password. Please try again.');
-  }
-});
+      document.getElementById('total-investment').querySelector('p').textContent = `₹${totalInvestment.toLocaleString()}`;
+      document.getElementById('total-profit').querySelector('p').textContent = `+₹${totalProfit.toLocaleString()}`;
+      document.getElementById('total-profit').querySelector('p').style.color = 'green';
+    }
+
+    function calculateTodaysPnL(csv) {
+      const today = new Date().toLocaleDateString('en-GB');
+      let todaysPnL = 0;
+
+      csv.trim().split('\n').slice(1).forEach(row => {
+        const [date, , amount, status] = row.split(',');
+        const value = parseFloat(amount.trim());
+        if (date.trim() === today && status.trim() === "Profit") {
+          todaysPnL += value;
+        } else if (date.trim() === today && status.trim() === "Loss") {
+          todaysPnL -= value;
+        }
+      });
+
+      const todaysPnLEl = document.getElementById('todays-pnl').querySelector('p');
+      todaysPnLEl.textContent = `₹${todaysPnL.toLocaleString()}`;
+      todaysPnLEl.style.color = todaysPnL >= 0 ? 'green' : 'red';
+    }
+
+    loginForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const username = document.getElementById('username').value.trim();
+      const password = document.getElementById('password').value.trim();
+
+      if (username === CLIENT_USERNAME && password === CLIENT_PASSWORD) {
+        loginPage.classList.add('hidden');
+        dashboardPage.classList.remove('hidden');
+        loadTableData(csvData);
+        calculateSummary(csvData);
+        calculateTodaysPnL(csvData);
+      } else {
+        alert('Invalid username or password. Please try again.');
+      }
+    });
+  </script>
+</body>
+</html>
