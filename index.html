@@ -266,19 +266,26 @@
 
     // Load table data
     function loadTableData(csv) {
-      const rows = csv.trim().split('\n').slice(1);
-      investmentTableBody.innerHTML = '';
-      rows.forEach(row => {
-        const cells = row.split(',');
-        const tr = document.createElement('tr');
-        cells.forEach(cell => {
-          const td = document.createElement('td');
-          td.textContent = cell.trim();
-          tr.appendChild(td);
-        });
-        investmentTableBody.appendChild(tr);
-      });
-    }
+  const rows = csv.trim().split('\n').slice(1);
+  investmentTableBody.innerHTML = '';
+  rows.forEach(row => {
+    const cells = row.split(',');
+    const tr = document.createElement('tr');
+    cells.forEach((cell, index) => {
+      const td = document.createElement('td');
+      td.textContent = cell.trim();
+
+      // Apply styles to the "Amount (₹)" cell if it's a profit
+      if (index === 2 && cells[3].trim() === "Profit") {
+        td.style.fontWeight = "bold";
+        td.style.color = "green";
+      }
+
+      tr.appendChild(td);
+    });
+    investmentTableBody.appendChild(tr);
+  });
+}
 
     // Calculate summary
     function calculateSummary(csv) {
