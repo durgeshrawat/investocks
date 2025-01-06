@@ -1,115 +1,253 @@
-// DOM elements
-const loginForm = document.getElementById('login-form');
-const loginPage = document.getElementById('login-page');
-const dashboardPage = document.getElementById('dashboard-page');
-const logoutButton = document.getElementById('logout-button');
-const investmentTableBody = document.querySelector('#investment-table tbody');
-const totalInvestmentEl = document.getElementById('total-investment').querySelector('p');
-const totalProfitEl = document.getElementById('total-profit').querySelector('p');
-const totalPortfolioEl = document.getElementById('total-portfolio').querySelector('p');
-const profitChartCanvas = document.getElementById('profit-chart');
-
-// Login credentials
-const CLIENT_USERNAME = "ashok";
-const CLIENT_PASSWORD = "secure";
-
-// Sample CSV data
-const csvData = `
-  Date,Description,Amount (₹),Status
-  23-Dec-2024,Investment,10000,Investment
-  23-Dec-2024,Exness,1256,Profit
-  24-Dec-2024,Exness,1899,Profit
-  25-Dec-2024,Exness,656,Profit
-  26-Dec-2024,Exness,4356,Profit
-`;
-
-// Event listener for login form submission
-loginForm.addEventListener('submit', (e) => {
-  e.preventDefault();
-  const username = document.getElementById('username').value.trim();
-  const password = document.getElementById('password').value.trim();
-
-  if (username === CLIENT_USERNAME && password === CLIENT_PASSWORD) {
-    loginPage.classList.add('hidden');
-    dashboardPage.classList.remove('hidden');
-    loadTableData(csvData);
-    calculateSummary(csvData);
-    loadProfitChart(csvData);
-  } else {
-    alert('Invalid username or password. Please try again.');
-  }
-});
-
-// Logout button functionality
-logoutButton.addEventListener('click', () => {
-  dashboardPage.classList.add('hidden');
-  loginPage.classList.remove('hidden');
-  document.getElementById('login-form').reset();
-});
-
-// Load table data
-function loadTableData(csv) {
-  const rows = csv.trim().split('\n').slice(1);
-  investmentTableBody.innerHTML = '';
-  rows.forEach(row => {
-    const cells = row.split(',');
-    const tr = document.createElement('tr');
-    cells.forEach((cell, index) => {
-      const td = document.createElement('td');
-      td.textContent = cell.trim();
-      if (index === 2 && cells[3].trim() === "Profit") {
-        td.style.fontWeight = "bold";
-        td.style.color = "green";
-      }
-      tr.appendChild(td);
-    });
-    investmentTableBody.appendChild(tr);
-  });
+/* General Styles */
+body {
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #add8e6; /* Light blue background */
+    color: #333;
 }
 
-// Calculate summary
-function calculateSummary(csv) {
-  let totalInvestment = 0, totalProfit = 0;
-  csv.trim().split('\n').slice(1).forEach(row => {
-    const [_, __, amount, status] = row.split(',');
-    const value = parseFloat(amount.trim());
-    if (status.trim() === "Investment") totalInvestment += value;
-    else totalProfit += value;
-  });
-  totalInvestmentEl.textContent = `₹${totalInvestment.toLocaleString()}`;
-  totalProfitEl.textContent = `₹${totalProfit.toLocaleString()}`;
-  totalPortfolioEl.textContent = `₹${(totalInvestment + totalProfit).toLocaleString()}`;
+/* Login Page Styles */
+#loginPage {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #ffffff; /* Full white background for login */
 }
 
-// Load profit chart
-function loadProfitChart(csv) {
-  const rows = csv.trim().split('\n').slice(1);
-  const labels = [];
-  const profits = [];
-  rows.forEach(row => {
-    const [date, , amount, status] = row.split(',');
-    if (status.trim() === "Profit") {
-      labels.push(date.trim());
-      profits.push(parseFloat(amount.trim()));
+#loginForm {
+    background: white;
+    padding: 50px 40px;
+    border-radius: 15px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+    text-align: center;
+    width: 400px;
+}
+
+#loginForm h2 {
+    margin-bottom: 20px;
+    font-size: 28px;
+    color: #007bff;
+}
+
+#loginForm p {
+    color: #555;
+    margin: 10px 0 20px;
+    font-size: 16px;
+}
+
+#loginForm input {
+    width: 100%;
+    padding: 12px;
+    margin: 10px 0;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+#loginForm button {
+    width: 100%;
+    padding: 12px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+}
+
+#loginForm button:hover {
+    background-color: #0056b3;
+}
+
+#loginForm .contact {
+    margin-top: 20px;
+    font-size: 14px;
+    color: #555;
+}
+
+#loginForm .contact button {
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+#loginForm .contact button:hover {
+    background-color: #0056b3;
+}
+
+/* Dashboard Styles */
+#dashboard {
+    display: none;
+}
+
+header {
+    background-color: #007bff;
+    color: white;
+    padding: 15px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+header h1 {
+    margin: 0;
+    font-size: 22px;
+}
+
+header button {
+    background-color: white;
+    color: #007bff;
+    border: none;
+    padding: 15px 25px;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+header button:hover {
+    background-color: #f2f2f2;
+}
+
+.container {
+    padding: 20px;
+}
+
+.stats, .messages, .profit-list {
+    margin-bottom: 20px;
+    padding: 30px;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.stats h2, .messages h2, .profit-list h2 {
+    margin-top: 0;
+    color: #007bff;
+}
+
+.stats p {
+    font-size: 16px;
+    line-height: 1.5;
+}
+
+.stats .green {
+    color: green;
+    font-weight: bold;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+table th, table td {
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: left;
+}
+
+table th {
+    background-color: #007bff;
+    color: white;
+}
+
+table tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+table tr:hover {
+    background-color: #f1f1f1;
+}
+
+footer {
+    text-align: center;
+    margin-top: 20px;
+    padding: 10px 0;
+    background: #f1f8ff;
+    color: #555;
+}
+
+footer span {
+    color: #007bff;
+}
+
+/* Popup Styles */
+.popup {
+    display: none;
+    position: fixed;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    background-color: white;
+    padding: 30px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    z-index: 1000;
+}
+
+.popup .popup-content {
+    margin-bottom: 10px;
+}
+
+.popup button {
+    padding: 10px 15px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.popup button:hover {
+    background-color: #0056b3;
+}
+
+.popup-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+}
+
+/* Media Queries for Responsiveness */
+@media screen and (max-width: 768px) {
+    header {
+        flex-direction: column;
+        align-items: flex-start;
+        text-align: center;
     }
-  });
-  new Chart(profitChartCanvas, {
-    type: 'line',
-    data: {
-      labels,
-      datasets: [{
-        label: 'Daily Profit (₹)',
-        data: profits,
-        borderColor: '#4c8bf5',
-        backgroundColor: 'rgba(76, 139, 245, 0.1)',
-        fill: true,
-      }]
-    },
-    options: {
-      responsive: true,
-      plugins: {
-        legend: { display: false }
-      }
+
+    .container {
+        padding: 10px;
     }
-  });
+
+    .stats, .messages, .profit-list {
+        padding: 20px;
+    }
+
+    .stats p, .messages p {
+        font-size: 14px;
+    }
+
+    table th, table td {
+        font-size: 14px;
+    }
 }
