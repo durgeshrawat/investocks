@@ -110,3 +110,19 @@ function closePopup() {
     document.getElementById("depositPopup").style.display = "none";
     document.getElementById("withdrawPopup").style.display = "none";
 }
+
+function showDeposit() {
+    document.getElementById("walletPopup").style.display = "none";
+    document.getElementById("depositPopup").style.display = "block";
+}
+
+function showWithdraw() {
+    document.getElementById("walletPopup").style.display = "none";
+    document.getElementById("withdrawPopup").style.display = "block";
+}
+
+// Show a success message (for Deposit or Withdrawal)
+function showMessage(message) {
+    alert(message); // Display the message in an alert box
+    closePopup(); // Close the popup after showing the message
+}
