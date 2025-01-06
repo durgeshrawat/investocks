@@ -1,126 +1,112 @@
-// DOM elements
-const loginForm = document.getElementById('login-form');
-const loginPage = document.getElementById('login-page');
-const dashboardPage = document.getElementById('dashboard-page');
-const logoutButton = document.getElementById('logout-button');
-const investmentTableBody = document.querySelector('#investment-table tbody');
-const totalInvestmentEl = document.getElementById('total-investment').querySelector('p');
-const totalProfitEl = document.getElementById('total-profit').querySelector('p');
-const totalPortfolioEl = document.getElementById('total-portfolio').querySelector('p');
-const profitChartCanvas = document.getElementById('profit-chart');
-
-// Login credentials
-const CLIENT_USERNAME = "ashok";
-const CLIENT_PASSWORD = "securepassword";
-
 // Sample CSV data
-const csvData = `
-Date,Description,Amount (₹),Status
-2025-01-01,Investment in Stock,50000,Investment
-2025-01-02,Daily Profit,3000,Profit
-2025-01-03,Daily Profit,4500,Profit
-2025-01-04,Daily Profit,-2000,Loss
-2025-01-05,Investment in Mutual Funds,20000,Investment
-2025-01-06,Daily Profit,5000,Profit
-`;
+const csvData = [
+    {date: "2025-01-01", time: "10:00", type: "Profit", amount: 2000, remark: "Profit from stock A"},
+    {date: "2025-01-03", time: "14:30", type: "Profit", amount: 1500, remark: "Profit from stock B"},
+    {date: "2025-01-05", time: "09:45", type: "Deposit", amount: 3000, remark: "Deposit to portfolio"},
+    {date: "2025-01-06", time: "11:00", type: "Profit", amount: 2500, remark: "Profit from stock C"},
+    {date: "2025-01-06", time: "16:30", type: "Investment", amount: 5000, remark: "Investment in stock X"},
+    {date: "2025-01-07", time: "10:00", type: "Investment", amount: 2000, remark: "Investment in stock Y"},
+];
 
-// Event listener for login form submission
-loginForm.addEventListener('submit', (e) => {
-  e.preventDefault(); // Prevent the form from refreshing the page
-  const username = document.getElementById('username').value.trim();
-  const password = document.getElementById('password').value.trim();
-
-  if (username === CLIENT_USERNAME && password === CLIENT_PASSWORD) {
-    // Hide login page and show dashboard
-    loginPage.classList.add('hidden');
-    dashboardPage.classList.remove('hidden');
-
-    // Initialize dashboard
-    loadTableData(csvData);
-    calculateSummary(csvData);
-    loadProfitChart(csvData);
-  } else {
-    alert('Invalid username or password. Please try again.');
-  }
-});
-
-// Logout button functionality
-logoutButton.addEventListener('click', () => {
-  dashboardPage.classList.add('hidden');
-  loginPage.classList.remove('hidden');
-  document.getElementById('login-form').reset(); // Clear login form
-});
-
-// Load table data
-function loadTableData(csv) {
-  const rows = csv.trim().split('\n').slice(1); // Exclude the header row
-  investmentTableBody.innerHTML = ''; // Clear existing rows
-
-  rows.forEach(row => {
-    const cells = row.split(',');
-    const tr = document.createElement('tr');
-    cells.forEach(cell => {
-      const td = document.createElement('td');
-      td.textContent = cell.trim();
-      tr.appendChild(td);
-    });
-    investmentTableBody.appendChild(tr);
-  });
-}
-
-// Calculate summary
-function calculateSummary(csv) {
-  let totalInvestment = 0, totalProfit = 0;
-
-  csv.trim().split('\n').slice(1).forEach(row => {
-    const [_, __, amount, status] = row.split(',');
-    const value = parseFloat(amount.trim());
-
-    if (status.trim() === "Investment") totalInvestment += value;
-    else totalProfit += value;
-  });
-
-  totalInvestmentEl.textContent = `₹${totalInvestment.toLocaleString()}`;
-  totalProfitEl.textContent = `₹${totalProfit.toLocaleString()}`;
-  totalPortfolioEl.textContent = `₹${(totalInvestment + totalProfit).toLocaleString()}`;
-}
-
-// Load profit chart
-function loadProfitChart(csv) {
-  const rows = csv.trim().split('\n').slice(1); // Exclude the header row
-  const labels = [];
-  const profits = [];
-
-  rows.forEach(row => {
-    const [date, , amount, status] = row.split(',');
-    if (status.trim() === "Profit" || status.trim() === "Loss") {
-      labels.push(date.trim());
-      profits.push(parseFloat(amount.trim()));
+function login() {
+    const username = document.getElementById("username").value;
+    const password = document.getElementById("password").value;
+    if (username === "ashok" && password === "secure") {
+        document.getElementById("loginPage").style.display = "none";
+        document.getElementById("dashboard").style.display = "block";
+        setGreeting(); // Set greeting message
+        populateTransactionTable(); // Populate the table with data
+        calculateTotalPnL(); // Calculate total P&L
+        calculateTodaysPnL(); // Calculate today's P&L
+        calculateTotalInvestment(); // Calculate total investment
+        calculateTotalPortfolioValue(); // Calculate total portfolio value
+    } else {
+        document.getElementById("loginError").style.display = "block";
     }
-  });
+}
 
-  new Chart(profitChartCanvas, {
-    type: 'line',
-    data: {
-      labels,
-      datasets: [{
-        label: 'Daily Profit (₹)',
-        data: profits,
-        borderColor: '#007bff',
-        backgroundColor: 'rgba(0, 123, 255, 0.2)',
-        borderWidth: 2,
-        fill: true,
-      }],
-    },
-    options: {
-      responsive: true,
-      plugins: {
-        legend: { display: true, position: 'top' },
-      },
-      scales: {
-        x: { title: { display: true, text: 'Date' } },
-        y: { title: { display: true, text: 'Profit (₹)' } },
-      },
-    },
-  });
+function logout() {
+    document.getElementById("loginPage").style.display = "flex";
+    document.getElementById("dashboard").style.display = "none";
+}
+
+function setGreeting() {
+    const currentHour = new Date().getHours();
+    let greetingMessage = "Good Evening, Ashok Mishra";
+    
+    if (currentHour >= 5 && currentHour < 12) {
+        greetingMessage = "Good Morning, Ashok Mishra";
+    } else if (currentHour >= 12 && currentHour < 18) {
+        greetingMessage = "Good Afternoon, Ashok Mishra";
+    }
+
+    document.getElementById("greeting").innerText = greetingMessage;
+}
+
+// Populate transaction table
+function populateTransactionTable() {
+    const tableBody = document.getElementById("transactionTable").getElementsByTagName('tbody')[0];
+    csvData.forEach(transaction => {
+        const row = tableBody.insertRow();
+        row.insertCell(0).innerText = transaction.date;
+        row.insertCell(1).innerText = transaction.time;
+        row.insertCell(2).innerText = transaction.type;
+        row.insertCell(3).innerText = `₹${transaction.amount}`;
+        row.insertCell(4).innerText = transaction.remark;
+    });
+}
+
+// Calculate Total P&L
+function calculateTotalPnL() {
+    let totalPnL = 0;
+    csvData.forEach(transaction => {
+        if (transaction.type === "Profit") {
+            totalPnL += transaction.amount;
+        }
+    });
+    document.getElementById("totalPnL").innerText = `₹${totalPnL}`;
+}
+
+// Calculate Today's P&L
+function calculateTodaysPnL() {
+    const today = new Date().toISOString().split('T')[0]; // Get today's date in YYYY-MM-DD format
+    let todaysPnL = 0;
+    csvData.forEach(transaction => {
+        if (transaction.type === "Profit" && transaction.date === today) {
+            todaysPnL += transaction.amount;
+        }
+    });
+    document.getElementById("todaysPnL").innerText = `₹${todaysPnL}`;
+}
+
+// Calculate Total Investment
+function calculateTotalInvestment() {
+    let totalInvestment = 0;
+    csvData.forEach(transaction => {
+        if (transaction.type === "Investment") {
+            totalInvestment += transaction.amount;
+        }
+    });
+    document.getElementById("totalInvestment").innerText = `₹${totalInvestment}`;
+}
+
+// Calculate Total Portfolio Value (Investment + P&L)
+function calculateTotalPortfolioValue() {
+    const totalPnL = parseFloat(document.getElementById("totalPnL").innerText.replace('₹', ''));
+    const totalInvestment = parseFloat(document.getElementById("totalInvestment").innerText.replace('₹', ''));
+    const totalPortfolioValue = totalInvestment + totalPnL;
+    document.getElementById("totalPortfolioValue").innerText = `₹${totalPortfolioValue}`;
+}
+
+// Popup functions
+function openWallet() {
+    document.getElementById("walletPopup").style.display = "block";
+    document.getElementById("popupOverlay").style.display = "block";
+}
+
+function closePopup() {
+    document.getElementById("popupOverlay").style.display = "none";
+    document.getElementById("walletPopup").style.display = "none";
+    document.getElementById("depositPopup").style.display = "none";
+    document.getElementById("withdrawPopup").style.display = "none";
 }
