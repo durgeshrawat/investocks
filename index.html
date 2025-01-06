@@ -286,61 +286,39 @@
     <div class="container">
         <div class="stats">
             <h2>Investment Overview</h2>
-            <p><strong>Total Investment:</strong> ₹155,000</p>
-            <p><strong>Total Portfolio Value:</strong> ₹253,000</p>
-            <p><strong>Total P&L:</strong> <span class="green">₹98,329.00</span></p>
-            <p><strong>Today's P&L:</strong> <span class="green">₹2,329</span></p>
-            
+            <p><strong>Total Investment:</strong> ₹<span id="totalInvestment">0.00</span></p>
+            <p><strong>Total Portfolio Value:</strong> ₹<span id="totalPortfolioValue">0.00</span></p>
+            <p><strong>Total P&L:</strong> <span class="green" id="totalPnL">₹0.00</span></p>
+            <p><strong>Today's P&L:</strong> <span class="green" id="todaysPnL">₹0.00</span></p>
         </div>
 
         <div class="messages">
             <h2>Messages</h2>
-            <p><strong>Note:</strong> Your portfolio is performing well. Keep growing! portfolio entries may fluctuate as not updated properly yet.</p>
+            <p><strong>Note:</strong> Your portfolio is performing well. Keep growing! Portfolio entries may fluctuate as not updated properly yet.</p>
         </div>
 
         <!-- Transactions Table -->
         <div class="profit-list">
             <h2>Transaction History</h2>
-            <p>Updating Soon</p>
-            <!-- <table>
+            <table id="transactionTable">
                 <thead>
                     <tr>
                         <th>Date</th>
-                        <th>Transaction Type</th>
-                        <th>Booked Profit (P&L)</th>
-                        <th>Status</th>
+                        <th>Time</th>
+                        <th>Type</th>
+                        <th>Amount</th>
+                        <th>Remark</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td>01-Jan-2025</td>
-                        <td>Deposit</td>
-                        <td>₹2,000</td>
-                        <td>Completed</td>
-                    </tr>
-                    <tr>
-                        <td>03-Jan-2025</td>
-                        <td>Withdrawal</td>
-                        <td>₹1,000</td>
-                        <td>Completed</td>
-                    </tr>
-                    <tr>
-                        <td>05-Jan-2025</td>
-                        <td>Deposit</td>
-                        <td>₹3,000</td>
-                        <td>Completed</td>
-                    </tr>
+                    <!-- Transactions will be populated here -->
                 </tbody>
-            </table> -->
+            </table>
         </div>
     </div>
-
-    <footer>
-        <span>© 2025 by Durgesh Rawat</span>
-    </footer>
 </div>
 
-<!-- Popup for Wallet Options -->
+<!-- Popups for Wallet Actions -->
 <div class="popup-overlay" id="popupOverlay" onclick="closePopup()"></div>
 <div class="popup" id="walletPopup">
     <div class="popup-content">
@@ -374,6 +352,16 @@
 </div>
 
 <script>
+    // Sample CSV data
+    const csvData = [
+        {date: "2025-01-01", time: "10:00", type: "Profit", amount: 2000, remark: "Profit from stock A"},
+        {date: "2025-01-03", time: "14:30", type: "Profit", amount: 1500, remark: "Profit from stock B"},
+        {date: "2025-01-05", time: "09:45", type: "Deposit", amount: 3000, remark: "Deposit to portfolio"},
+        {date: "2025-01-06", time: "11:00", type: "Profit", amount: 2500, remark: "Profit from stock C"},
+        {date: "2025-01-06", time: "16:30", type: "Investment", amount: 5000, remark: "Investment in stock X"},
+        {date: "2025-01-07", time: "10:00", type: "Investment", amount: 2000, remark: "Investment in stock Y"},
+    ];
+
     function login() {
         const username = document.getElementById("username").value;
         const password = document.getElementById("password").value;
@@ -381,6 +369,11 @@
             document.getElementById("loginPage").style.display = "none";
             document.getElementById("dashboard").style.display = "block";
             setGreeting(); // Set greeting message
+            populateTransactionTable(); // Populate the table with data
+            calculateTotalPnL(); // Calculate total P&L
+            calculateTodaysPnL(); // Calculate today's P&L
+            calculateTotalInvestment(); // Calculate total investment
+            calculateTotalPortfolioValue(); // Calculate total portfolio value
         } else {
             document.getElementById("loginError").style.display = "block";
         }
@@ -391,34 +384,6 @@
         document.getElementById("dashboard").style.display = "none";
     }
 
-    function openWallet() {
-        document.getElementById("walletPopup").style.display = "block";
-        document.getElementById("popupOverlay").style.display = "block";
-    }
-
-    function closePopup() {
-        document.getElementById("popupOverlay").style.display = "none";
-        document.getElementById("walletPopup").style.display = "none";
-        document.getElementById("depositPopup").style.display = "none";
-        document.getElementById("withdrawPopup").style.display = "none";
-    }
-
-    function showDeposit() {
-        document.getElementById("walletPopup").style.display = "none";
-        document.getElementById("depositPopup").style.display = "block";
-    }
-
-    function showWithdraw() {
-        document.getElementById("walletPopup").style.display = "none";
-        document.getElementById("withdrawPopup").style.display = "block";
-    }
-
-    function showMessage(message) {
-        alert(message);
-        closePopup();
-    }
-
-    // Function to set greeting message based on time
     function setGreeting() {
         const currentHour = new Date().getHours();
         let greetingMessage = "Good Evening, Ashok Mishra";
@@ -430,6 +395,74 @@
         }
 
         document.getElementById("greeting").innerText = greetingMessage;
+    }
+
+    // Populate transaction table
+    function populateTransactionTable() {
+        const tableBody = document.getElementById("transactionTable").getElementsByTagName('tbody')[0];
+        csvData.forEach(transaction => {
+            const row = tableBody.insertRow();
+            row.insertCell(0).innerText = transaction.date;
+            row.insertCell(1).innerText = transaction.time;
+            row.insertCell(2).innerText = transaction.type;
+            row.insertCell(3).innerText = `₹${transaction.amount}`;
+            row.insertCell(4).innerText = transaction.remark;
+        });
+    }
+
+    // Calculate Total P&L
+    function calculateTotalPnL() {
+        let totalPnL = 0;
+        csvData.forEach(transaction => {
+            if (transaction.type === "Profit") {
+                totalPnL += transaction.amount;
+            }
+        });
+        document.getElementById("totalPnL").innerText = `₹${totalPnL}`;
+    }
+
+    // Calculate Today's P&L
+    function calculateTodaysPnL() {
+        const today = new Date().toISOString().split('T')[0]; // Get today's date in YYYY-MM-DD format
+        let todaysPnL = 0;
+        csvData.forEach(transaction => {
+            if (transaction.type === "Profit" && transaction.date === today) {
+                todaysPnL += transaction.amount;
+            }
+        });
+        document.getElementById("todaysPnL").innerText = `₹${todaysPnL}`;
+    }
+
+    // Calculate Total Investment
+    function calculateTotalInvestment() {
+        let totalInvestment = 0;
+        csvData.forEach(transaction => {
+            if (transaction.type === "Investment") {
+                totalInvestment += transaction.amount;
+            }
+        });
+        document.getElementById("totalInvestment").innerText = `₹${totalInvestment}`;
+    }
+
+    // Calculate Total Portfolio Value (Investment + P&L)
+    function calculateTotalPortfolioValue() {
+        const totalPnL = parseFloat(document.getElementById("totalPnL").innerText.replace('₹', ''));
+        const totalInvestment = parseFloat(document.getElementById("totalInvestment").innerText.replace('₹', ''));
+        const totalPortfolioValue = totalInvestment + totalPnL;
+        document.getElementById("totalPortfolioValue").innerText = `₹${totalPortfolioValue}`;
+    }
+
+    // Popup functions
+    function openWallet() {
+        document.getElementById("walletPopup").style.display = "block";
+        document.getElementById("popupOverlay").style.display = "block";
+    }
+
+    function closePopup() {
+        document.getElementById("popupOverlay").style.display = "none";
+        document.getElementById("walletPopup").style.display = "none";
+        document.getElementById("depositPopup").style.display = "none";
+        document.getElementById("withdrawPopup").style.display = "none";
     }
 </script>
 
